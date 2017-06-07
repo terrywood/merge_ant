@@ -32,10 +32,17 @@ def parse(content):
         working['buy'] = buy_list
         return working
     else:
-        return json.loads(content[0:index2])
+        logger.info(index1)
+        if index1 == -3:
+            return json.loads(content[0:index2 - 2])
+            logger.info(content[0:index2 - 2])
+        else:
+            return json.loads(content[0:index2])
+            logger.info(content[0:index2])
 
 
 def mail():
+    logger.info("handle mail function...........")
     content_info = None
     conn = imaplib.IMAP4(config['mail_host'])
     conn.login(config['mail_user'], config['mail_pass'])
@@ -85,6 +92,7 @@ def mail():
                             for part in msg.walk():
                                 content_info = part.get_payload(decode=True).decode()
                                 content_info = content_info[0:content_info.find("\n")]
+                                logger.info(content_info)
                                 trading(content_info)
 
     conn.close()
@@ -124,11 +132,11 @@ def main():
     read_config("ant.json")
     logger.info(config)
     global user
-    user = easytrader.use('gf', debug=False)
+    logger.info("login gf")
+    user = easytrader.use('gf', debug=True)
+    logger.info("login gf2")
     user.prepare('gf.json')
-    gf_positions = user.get_position()
-    logger.info("trading...........")
-    logger.info(gf_positions)
+    logger.info("login gf3")
     mail()
 
 
